@@ -846,7 +846,18 @@ trait IterableOps[+A, +CC[X], +C] extends Any {
     *    `List("a", "b", "c").zipWithIndex == List(("a", 0), ("b", 1), ("c", 2))`
     */
   def zipWithIndex: CC[(A @uncheckedVariance, Int)] = fromIterable(View.ZipWithIndex(toIterable))
-
+  
+  /** Returns a $coll formed by zipping this $coll and another iterable collection,
+    *  and applying `f` to each pair.
+    *
+    * Semantically equivalent to `this.zip(that).map(t => f(t._1, t._2))`
+    *
+    * @param that  The other iterable to zip with
+    * @param f     The function used to reduce each zipped pair
+    * @return      A new collection
+    */
+  def zipWith[B, R](that: Iterable[B])(f: (A, B) => R): CC[R] = fromIterable(View.ZipWith(toIterable, that, f))
+  
   /** Converts this $coll of pairs into two collections of the first and second
     *  half of each pair.
     *

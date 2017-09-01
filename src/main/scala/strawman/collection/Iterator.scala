@@ -629,6 +629,17 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
       ret
     }
   }
+  
+  /** Creates an iterator that zips each element produced by this iterator
+    *  with one produced by the iterator of `that` and then applies `f` to each pair.
+    *
+    * @return   a new iterator containing the output of `f` for each zipped pair
+    */
+  def zipWith[B, R](that: IterableOnce[B])(f: (A, B) => R): Iterator[R] = new Iterator[R] {
+    val thatIterator = that.iterator()
+    def hasNext = self.hasNext && thatIterator.hasNext
+    def next() = f(self.next(), thatIterator.next())
+  }
 
   def sameElements[B >: A](that: IterableOnce[B]): Boolean = {
     val those = that.iterator()
