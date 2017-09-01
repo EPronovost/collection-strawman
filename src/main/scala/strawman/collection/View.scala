@@ -86,6 +86,19 @@ object View extends IterableFactory[View] {
     def iterator(): Iterator[A] = Iterator.iterate(start)(f).take(len)
     override def knownSize: Int = 0 max len
   }
+  
+  case class Intersperse[A, B >: A](underlying: Iterable[A], sep: B) extends View[B] {
+    def iterator(): Iterator[B] = new Iterator[B] {
+      val underlyingIterator = underlying.iterator()
+      var intersperseNext = false
+      override def hasNext = intersperseNext || underlyingIterator.hasNext
+      override def next() = {
+        val n = if (intersperseNext) sep else underlyingIterator.next()
+        intersperseNext = !intersperseNext && underlyingIterator.hasNext
+        n
+      }
+    }
+  }
 
   /** A view that filters an underlying collection. */
   class Filter[A](val underlying: Iterable[A], val p: A => Boolean, val isFlipped: Boolean) extends View[A] {

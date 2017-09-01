@@ -288,6 +288,30 @@ trait IterableOps[+A, +CC[X], +C] extends Any {
     *       <className>(elem_1, ..., elem_n)
     */
   def className = getClass.getName
+  
+  /** Adds the element `sep` between each element of the iterable.
+    * e.g. List(1, 2, 3, 4).sep(0) => List(1, 0, 2, 0, 3, 0, 4)
+    * If the iterable has less then two elements, the collection is unchanged.
+    *
+    * @param sep the element to intersperse
+    * @tparam B the new type of the object in the collection
+    * @return the new collection
+    */
+  def intersperse[B >: A](sep: B): CC[B] = iterableFactory.fromIterable(View.Intersperse[A, B](toIterable, sep))
+  
+  /** Adds the element `sep` between each element of the iterable,
+    * prepending `start` and appending `end`.
+    * e.g. List(1, 2, 3, 4).sep(-1, 0, 5) => List(-1, 1, 0, 2, 0, 3, 0, 4, 5)
+    * If the iterable has less than two elements, returns `start :: this :: end`.
+    *
+    * @param start the element to prepend
+    * @param sep the element to intersperse
+    * @param end the element to append
+    * @tparam B the new type of the object in the collection
+    * @return the new collection
+    */
+  def intersperse[B >: A](start: B, sep: B, end: B): CC[B] =
+    iterableFactory.fromIterable(View.Append(View.Prepend(start, View.Intersperse[A, B](toIterable, sep)), end))
 
   /** A string showing all elements of this collection, separated by string `sep`. */
   def mkString(start: String, sep: String, end: String): String = {
