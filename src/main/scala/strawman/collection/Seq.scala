@@ -99,6 +99,32 @@ trait SeqOps[+A, +CC[X], +C] extends Any
    *          that the resulting collection has a length of at least `len`.
    */
   def padTo[B >: A](len: Int, elem: B): CC[B] = fromIterable(View.PadTo(toIterable, len, elem))
+  
+  /** Adds the element `sep` between each element of the sequence.
+    * e.g. `List(1, 2, 3, 4).intersperse(0) = List(1, 0, 2, 0, 3, 0, 4)`
+    * If the sequence has less then two elements, the collection is unchanged.
+    *
+    * @param sep the element to intersperse
+    * @tparam B the element type of the returned $coll
+    * @return a new collection of type `$Coll` consisting of all elements of this $coll
+    *         interspersed with the element `sep`
+    */
+  def intersperse[B >: A](sep: B): CC[B] = fromIterable(View.Intersperse(toIterable, sep))
+  
+  /** Adds the element `sep` between each element of the sequence,
+    * prepending `start` and appending `end`.
+    * e.g. `List(1, 2, 3, 4).intersperse(-1, 0, 5) => List(-1, 1, 0, 2, 0, 3, 0, 4, 5)`
+    * If the sequence has less than two elements, returns `start :: this :: end`.
+    *
+    * @param start the element to prepend
+    * @param sep the element to intersperse
+    * @param end the element to append
+    * @tparam B the element type of the returned $coll
+    * @return a new collection of type `$Coll` consisting of all elements of this $coll
+    *         interspersed with the element `sep`, beginning with `start` and ending with `end`
+    */
+  def intersperse[B >: A](start: B, sep: B, end: B): CC[B] =
+    fromIterable(View.Append(View.Prepend(start, View.Intersperse(toIterable, sep)), end))
 
   /** Finds index of the first element satisfying some predicate after or at some start index.
     *
