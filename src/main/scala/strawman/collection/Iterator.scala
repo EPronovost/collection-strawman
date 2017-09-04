@@ -383,6 +383,42 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
   }
 
   final def size: Int = length
+  
+  def intersperse[B >: A](sep: B): Iterator[B] = new Iterator[B] {
+    var intersperseNext = false
+    override def hasNext = intersperseNext || self.hasNext
+    override def next() = {
+      val n = if (intersperseNext) sep else self.next()
+      intersperseNext = !intersperseNext && self.hasNext
+      n
+    }
+  }
+  
+  def intersperse[B >: A](start: B, sep: B, end: B): Iterator[B] = new Iterator[B] {
+    var started = false
+    var finished = false
+    var intersperseNext = false
+    
+    override def hasNext: Boolean = !finished || intersperseNext || self.hasNext
+
+    override def next(): B =
+      if (!started) {
+        started = true
+        start
+      } else if (intersperseNext) {
+        intersperseNext = false
+        sep
+      } else if (self.hasNext) {
+        val n = self.next()
+        intersperseNext = self.hasNext
+        n
+      } else if (!finished) {
+        finished = true
+        end
+      } else {
+        throw new NoSuchElementException("next on empty iterator")
+      }
+  }
 
   /** Selects all elements of this iterator which satisfy a predicate.
     *

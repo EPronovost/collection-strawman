@@ -88,16 +88,17 @@ object View extends IterableFactory[View] {
   }
   
   case class Intersperse[A, B >: A](underlying: Iterable[A], sep: B) extends View[B] {
-    def iterator(): Iterator[B] = new Iterator[B] {
-      val underlyingIterator = underlying.iterator()
-      var intersperseNext = false
-      override def hasNext = intersperseNext || underlyingIterator.hasNext
-      override def next() = {
-        val n = if (intersperseNext) sep else underlyingIterator.next()
-        intersperseNext = !intersperseNext && underlyingIterator.hasNext
-        n
-      }
-    }
+    def iterator(): Iterator[B] = underlying.iterator().intersperse(sep)
+    override def knownSize: Int = if (underlying.knownSize > 0) (2 * underlying.knownSize - 1) else underlying.knownSize
+  }
+  
+  case class IntersperseAppend[A, B >: A](underlying: Iterable[A], start: B, sep: B, end: B) extends View[B] {
+    def iterator(): Iterator[B] = underlying.iterator().intersperse(start, sep, end)
+  
+    override def knownSize: Int =
+      if (underlying.knownSize > 0) (2 * underlying.knownSize + 1)
+      else if (underlying.knownSize == 0) 2
+      else underlying.knownSize
   }
 
   /** A view that filters an underlying collection. */
