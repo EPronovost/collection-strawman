@@ -77,6 +77,11 @@ class IteratorTest {
     assertEquals(10000,  View.fromIterator(mk(10000)).sum)
     assertEquals(100000, View.fromIterator(mk(100000)).sum)
   }
+  
+  @Test def lazyFoldRight(): Unit = {
+    assertEquals(true, LazyList.continually(true).lazyFoldRight(false)(_ || _))
+    assertEquals(55, Iterator.range(0, 11).lazyFoldRight(0)(_ + _))
+  }
 
   @Test def from(): Unit = {
     val it1 = Iterator.from(-1)

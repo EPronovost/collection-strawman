@@ -116,6 +116,9 @@ trait IterableOps[+A, +CC[X], +C] extends Any {
 
   /** Fold right */
   def foldRight[B](z: B)(op: (A, B) => B): B = toIterable.iterator().foldRight(z)(op)
+  
+  /** Lazy fold right */
+  def lazyFoldRight[B](z: B)(op: (A, => B) => B): B = toIterable.iterator().lazyFoldRight(z)(op)
 
   /** Reduces the elements of this $coll using the specified associative binary operator.
    *

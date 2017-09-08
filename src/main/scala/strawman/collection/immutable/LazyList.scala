@@ -84,10 +84,6 @@ sealed abstract class LazyList[+A]
     if (this.isEmpty) z
     else tail.foldLeft(op(z, head))(op)
   }
-  
-  final def lazyFoldRight[B](z: B)(op: (A, => B) => B): B =
-    if (isEmpty) z
-    else op(head, tail.lazyFoldRight(z)(op))
 
   override def scanLeft[B](z: B)(op: (B, A) => B): LazyList[B] =
     if (isEmpty) z +: LazyList.empty

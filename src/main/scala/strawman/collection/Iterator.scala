@@ -291,6 +291,9 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
 
   def foldRight[B](z: B)(op: (A, B) => B): B =
     if (hasNext) op(next(), foldRight(z)(op)) else z
+  
+  def lazyFoldRight[B](z: B)(op: (A, => B) => B): B =
+    if (hasNext) op(next(), lazyFoldRight(z)(op)) else z
 
 /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
