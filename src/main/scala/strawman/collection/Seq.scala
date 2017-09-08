@@ -125,6 +125,9 @@ trait SeqOps[+A, +CC[X], +C] extends Any
     */
   def intersperse[B >: A](start: B, sep: B, end: B): CC[B] =
     fromIterable(View.IntersperseAppend(toIterable, start, sep, end))
+  
+  protected[collection] def viewIntersperse[B >: A](start: B, sep: B, end: B): CC[B] =
+    fromIterable(View.Append(View.Prepend(start, View.Intersperse(toIterable, sep)), end))
 
   /** Finds index of the first element satisfying some predicate after or at some start index.
     *
