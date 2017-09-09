@@ -171,6 +171,14 @@ class IteratorTest {
 //    results += (Stream from 1).toIterator.drop(10).toStream.drop(10).toIterator.next()
     assertSameElements(List.empty, results)
   }
+  
+  @Test def foldLeftWhile(): Unit = {
+    val r = Range(0, 100)
+    assertEquals(0, r.foldLeftWhile(0)((x, y) => None))
+    assertEquals(10, r.foldLeftWhile(0)((x, y) => if (y > 10) None else Some(y)))
+    assertEquals(55, r.foldLeftWhile(0)((x, y) => if (y > 10) None else Some(x + y)))
+    assertEquals(4950, r.foldLeftWhile(0)((x, y) => Some(x + y)))
+  }
 
   // scala/bug#8552
   @Test def indexOfShouldWorkForTwoParams(): Unit = {
