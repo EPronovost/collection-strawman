@@ -117,9 +117,7 @@ trait IterableOps[+A, +CC[X], +C] extends Any {
   /** Fold right */
   def foldRight[B](z: B)(op: (A, B) => B): B = toIterable.iterator().foldRight(z)(op)
   
-  def foldLeftWhile1[B](z: B)(op: (B, A) => Option[B]): B = toIterable.iterator().foldLeftWhile1(z)(op)
-  
-  def foldLeftWhile2[B](z: B)(op: (B, A) => Option[B]): B = toIterable.iterator().foldLeftWhile2(z)(op)
+  def foldLeftWhile[B](z: B)(op: (B, A) => Option[B]): B = toIterable.iterator().foldLeftWhile(z)(op)
   
   /** Reduces the elements of this $coll using the specified associative binary operator.
    *
