@@ -291,6 +291,33 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
 
   def foldRight[B](z: B)(op: (A, B) => B): B =
     if (hasNext) op(next(), foldRight(z)(op)) else z
+  
+  def foldLeftWhile1[B](z: B)(op: (B, A) => Option[B]): B = {
+    var result: B = z
+    while (hasNext) {
+      op(result, next()) match {
+        case Some(v) => result = v
+        case None => return result
+      }
+    }
+    result
+  }
+  
+  def foldLeftWhile2[B](z: B)(op: (B, A) => Option[B]): B = {
+    @tailrec
+    def loop(it: Iterator[A], prev: B): B = {
+      if (it.hasNext) {
+        val next = it.next()
+        op(prev, next) match {
+          case Some(value) => loop(it, value)
+          case None => prev
+        }
+      } else {
+        prev
+      }
+    }
+    loop(this, z)
+  }
 
 /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
