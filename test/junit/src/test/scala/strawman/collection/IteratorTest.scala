@@ -176,6 +176,13 @@ class IteratorTest {
 //    results += (Stream from 1).toIterator.drop(10).toStream.drop(10).toIterator.next()
     assertSameElements(List.empty, results)
   }
+  
+  @Test def lazyFoldRightIsLazy(): Unit = {
+    val xs = LazyList.from(0)
+    def chooseOne(x: Int): Either[Int, Int => Int]= if (x < (1 << 16)) Right(identity) else Left(x)
+    
+    assertEquals(1 << 16, xs.iterator().lazyFoldRightStackSafe(0)(chooseOne))
+  }
 
   // scala/bug#8552
   @Test def indexOfShouldWorkForTwoParams(): Unit = {

@@ -2,7 +2,7 @@ package strawman.collection
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 
-import scala.{Any, Array, Boolean, IllegalArgumentException, Int, NoSuchElementException, None, Nothing, Option, PartialFunction, Some, StringContext, Unit, `inline`, math, throws}
+import scala.{Any, Array, Boolean, Either, IllegalArgumentException, Int, Left, NoSuchElementException, None, Nothing, Option, PartialFunction, Right, Some, StringContext, Unit, `inline`, math, throws}
 import scala.Predef.{intWrapper, require, String}
 import strawman.collection.mutable.{ArrayBuffer, StringBuilder}
 
@@ -294,6 +294,26 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
   
   def lazyFoldRight[B](z: B)(op: (A, => B) => B): B =
     if (hasNext) op(next(), lazyFoldRight(z)(op)) else z
+  
+  def lazyFoldRightStackSafe[B](z: B)(op: A => Either[B, B => B]): B = {
+    
+    def chainEval(x: B, fs: immutable.List[B => B]): B =
+      fs.foldLeft(x)((x, f) => f(x))
+    
+    @tailrec
+    def loop(fs: immutable.List[B => B]): B = {
+      if (hasNext) {
+        op(next()) match {
+          case Left(v) => chainEval(v, fs)
+          case Right(g) => loop(g :: fs)
+        }
+      } else {
+        chainEval(z, fs)
+      }
+    }
+    
+    loop(immutable.List.empty)
+  }
 
 /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
