@@ -79,8 +79,8 @@ class IteratorTest {
   }
   
   @Test def lazyFoldRight(): Unit = {
-    assertEquals(true, LazyList.continually(true).lazyFoldRight(false)(_ || _))
-    assertEquals(55, Iterator.range(0, 11).lazyFoldRight(0)(_ + _))
+    assertEquals(true, LazyList.continually(true).lazyFoldRight(false)(x => if (x) Left(true) else Right(identity[Boolean])))
+    assertEquals(55, Iterator.range(0, 11).lazyFoldRight(0)(x => Right(_ + x)))
   }
 
   @Test def from(): Unit = {
@@ -181,7 +181,7 @@ class IteratorTest {
     val xs = LazyList.from(0)
     def chooseOne(x: Int): Either[Int, Int => Int]= if (x < (1 << 16)) Right(identity) else Left(x)
     
-    assertEquals(1 << 16, xs.iterator().lazyFoldRightStackSafe(0)(chooseOne))
+    assertEquals(1 << 16, xs.lazyFoldRight(0)(chooseOne))
   }
 
   // scala/bug#8552

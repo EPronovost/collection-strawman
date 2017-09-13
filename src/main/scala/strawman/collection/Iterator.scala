@@ -289,13 +289,13 @@ trait Iterator[+A] extends IterableOnce[A] { self =>
     result
   }
 
-  def foldRight[B](z: B)(op: (A, B) => B): B =
-    if (hasNext) op(next(), foldRight(z)(op)) else z
+  def foldRight[B](z: B)(op: (A, B) => B): B = {
+    var reversed: immutable.List[A] = immutable.Nil
+    while (hasNext) reversed = next() :: reversed
+    reversed.foldLeft(z)((b, a) => op(a, b))
+  }
   
-  def lazyFoldRight[B](z: B)(op: (A, => B) => B): B =
-    if (hasNext) op(next(), lazyFoldRight(z)(op)) else z
-  
-  def lazyFoldRightStackSafe[B](z: B)(op: A => Either[B, B => B]): B = {
+  def lazyFoldRight[B](z: B)(op: A => Either[B, B => B]): B = {
     
     def chainEval(x: B, fs: immutable.List[B => B]): B =
       fs.foldLeft(x)((x, f) => f(x))

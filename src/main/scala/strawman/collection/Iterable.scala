@@ -3,7 +3,7 @@ package collection
 
 import scala.annotation.unchecked.uncheckedVariance
 import scala.reflect.ClassTag
-import scala.{Any, AnyRef, Array, Boolean, `inline`, Int, None, Numeric, Option, Ordering, PartialFunction, StringContext, Some, Unit}
+import scala.{Any, AnyRef, Array, Boolean, Either, `inline`, Int, None, Numeric, Option, Ordering, PartialFunction, StringContext, Some, Unit}
 import java.lang.{String, UnsupportedOperationException}
 import scala.Predef.<:<
 
@@ -115,10 +115,10 @@ trait IterableOps[+A, +CC[X], +C] extends Any {
   def foldLeft[B](z: B)(op: (B, A) => B): B = toIterable.iterator().foldLeft(z)(op)
 
   /** Fold right */
-  def foldRight[B](z: B)(op: (A, B) => B): B = toIterable.iterator().foldRight(z)(op)
+  def foldRight[B](z: B)(op: (A, B) => B): B = reversed.iterator().foldLeft(z)((b, a) => op(a, b))
   
   /** Lazy fold right */
-  def lazyFoldRight[B](z: B)(op: (A, => B) => B): B = toIterable.iterator().lazyFoldRight(z)(op)
+  def lazyFoldRight[B](z: B)(op: A => Either[B, B => B]): B = toIterable.iterator().lazyFoldRight(z)(op)
 
   /** Reduces the elements of this $coll using the specified associative binary operator.
    *
