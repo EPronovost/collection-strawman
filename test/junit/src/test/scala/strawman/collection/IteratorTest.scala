@@ -172,12 +172,12 @@ class IteratorTest {
     assertSameElements(List.empty, results)
   }
   
-  @Test def foldLeftWhile(): Unit = {
+  @Test def foldSomeLeft(): Unit = {
     val r = Range(0, 100)
-    assertEquals(0, r.foldLeftWhile(0)((x, y) => None))
-    assertEquals(10, r.foldLeftWhile(0)((x, y) => if (y > 10) None else Some(y)))
-    assertEquals(55, r.foldLeftWhile(0)((x, y) => if (y > 10) None else Some(x + y)))
-    assertEquals(4950, r.foldLeftWhile(0)((x, y) => Some(x + y)))
+    assertEquals(0, r.foldSomeLeft(0)((x, y) => None))
+    assertEquals(10, r.foldSomeLeft(0)((x, y) => if (y > 10) None else Some(y)))
+    assertEquals(55, r.foldSomeLeft(0)((x, y) => if (y > 10) None else Some(x + y)))
+    assertEquals(4950, r.foldSomeLeft(0)((x, y) => Some(x + y)))
   }
 
   // scala/bug#8552
