@@ -178,6 +178,8 @@ class IteratorTest {
     assertEquals(10, r.foldSomeLeft(0)((x, y) => if (y > 10) None else Some(y)))
     assertEquals(55, r.foldSomeLeft(0)((x, y) => if (y > 10) None else Some(x + y)))
     assertEquals(4950, r.foldSomeLeft(0)((x, y) => Some(x + y)))
+    
+    assertEquals(10, List[Int]().foldSomeLeft(10)((x, y) => Some(x + y)))
   }
 
   // scala/bug#8552
